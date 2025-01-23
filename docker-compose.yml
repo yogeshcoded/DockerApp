@@ -1,0 +1,44 @@
+version: "3.8"
+services:
+  discovery-server:
+    build: ./discover-service
+    image: discovery
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    networks:
+      - mynetwork
+
+  book-service:
+    image: books
+    container_name: book-service
+    build: ./bookservice
+    environment:
+      EUREKA_INSTANCE_HOSTNAME: discovery-server
+      EUREKA_PORT: 8761
+    ports:
+      - "9091:9091"
+    depends_on:
+      discovery-server:
+        condition: service_started
+    networks:
+      - mynetwork
+
+  gateway-service:
+    build: ./gateway
+    image: gate
+    container_name: gateway-service
+    environment:
+      EUREKA_INSTANCE_HOSTNAME: discovery-server
+      EUREKA_PORT: 8761
+    depends_on:
+      discovery-server:
+        condition: service_started
+    ports:
+      - "8765:8765"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge

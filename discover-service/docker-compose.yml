@@ -1,0 +1,8 @@
+version: "3.8"
+
+services:
+  discovery-service:
+   image: yogeshcoded/eureka:latest
+   container_name: discovery
+   ports:
+      - "8761:8761"
